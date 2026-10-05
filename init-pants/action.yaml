@@ -154,8 +154,11 @@ runs:
     - name: Ensure the Pants launcher binary
       working-directory: ${{ inputs.working-directory }}
       shell: bash
+      env:
+        GET_PANTS_VERSION: ${{ inputs.get-pants-version }}
+        SETUP_COMMIT: ${{ inputs.setup-commit }}
       run: |
-        VERSION="${{ inputs.get-pants-version }}"
+        VERSION="$GET_PANTS_VERSION"
         if [ -n "${VERSION}" ]; then
           VERSION_FLAG="--version ${VERSION}"
         else
@@ -167,10 +170,10 @@ runs:
           else
             curl --proto '=https' --tlsv1.2 \
               --retry 3 --retry-delay 2 --retry-all-errors --create-dirs \
-              -fsSLo ${{ runner.temp }}/get-pants.sh \
-              https://raw.githubusercontent.com/pantsbuild/setup/${{ inputs.setup-commit }}/get-pants.sh
-            chmod +x ${{ runner.temp }}/get-pants.sh
-            ${{ runner.temp }}/get-pants.sh $VERSION_FLAG
+              -fsSLo "$RUNNER_TEMP/get-pants.sh" \
+              "https://raw.githubusercontent.com/pantsbuild/setup/${SETUP_COMMIT}/get-pants.sh"
+            chmod +x "$RUNNER_TEMP/get-pants.sh"
+            "$RUNNER_TEMP/get-pants.sh" $VERSION_FLAG
           fi
           # add 'pants' is on the PATH for subsequent actions.
           if [[ -f "$HOME/bin/pants" ]]; then
@@ -220,11 +223,11 @@ runs:
       if: inputs.cache-lmdb-store == 'true'
       shell: bash
       # we could use this, but only if fetch-depth goes back far enough
-      # COMMIT=$(git merge-base ${GITHUB_BASE_REF:-${{ inputs.base-branch }}} HEAD | head -n1)
+      # COMMIT=$(git merge-base ${GITHUB_BASE_REF:-$BASE_BRANCH} HEAD | head -n1)
       run: |
         CACHECOMMIT=$(
           gh api -H "Accept: application/vnd.github+json" \
-          '/repos/${{ github.repository }}/commits?per_page=1&sha=${{ inputs.base-branch }}' \
+          "/repos/${GITHUB_REPOSITORY}/commits?per_page=1&sha=${BASE_BRANCH}" \
           -q '.[].sha'
         )
         echo "CACHECOMMIT=${CACHECOMMIT}" >> $GITHUB_OUTPUT
@@ -234,6 +237,7 @@ runs:
         # the hostname, the token must be named GITHUB_ENTERPRISE_TOKEN.
         GITHUB_ENTERPRISE_TOKEN: ${{ github.token }}
         GH_HOST: ${{ inputs.gh-host }}
+        BASE_BRANCH: ${{ inputs.base-branch }}
 
     - name: Cache Pants LMDB store
       if: inputs.cache-lmdb-store == 'true'
