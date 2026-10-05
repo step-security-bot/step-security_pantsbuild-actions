@@ -48,13 +48,13 @@ a GHA cache. By default, this action does NOT cache the `lmdb_store`.
 This is a very coarse cache that can grow unbounded. So, it is very likely to hit
 GitHub's 10GB per repo max for action caches. If you enable this, you need another
 process or workflow to manage discarding older GHA caches, or minimizing the cache size
-as described in the [docs](https://www.pantsbuild.org/docs/using-pants-in-ci).
-Use the default if using [remote caching](https://www.pantsbuild.org/docs/remote-caching).
+as described in the [docs](https://www.pantsbuild.org/stable/docs/using-pants/using-pants-in-ci).
+Use the default if using [remote caching](https://www.pantsbuild.org/stable/docs/using-pants/remote-caching-and-execution/remote-caching).
 
 `experimental-remote-cache-via-gha`: This is used to configure the remote caching address
 and oauth token so that pants can use GHA as a fine-grained remote cache. You must also
 configure the other remote caching options in `pants.ci.toml` or similar as described in
-[remote caching](https://www.pantsbuild.org/2.20/docs/using-pants/remote-caching-and-execution/remote-caching#github-actions-cache).
+[remote caching](https://www.pantsbuild.org/stable/docs/using-pants/remote-caching-and-execution/remote-caching#github-actions-cache).
 
 `get-pants-version`: This is used to override the version of scie-pants
 downloaded by `get-pants.sh`. The default is the latest version. To specify a
@@ -77,7 +77,7 @@ has been customized in `pants.toml`.
 Set to empty to skip adding it to the environment for the rest of the workflow.
 Defaults to `pants.ci.toml`.
 For more about this var and the file naming convention, see:
-https://www.pantsbuild.org/docs/using-pants-in-ci#configuring-pants-for-ci-pantscitoml-optional
+https://www.pantsbuild.org/stable/docs/using-pants/using-pants-in-ci#configuring-pants-for-ci-pantscitoml-optional
 
 `setup-commit`: Which version/commit of get-pants.sh script to use when installing pants.
 
